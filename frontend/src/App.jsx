@@ -16,7 +16,7 @@ function App() {
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await fetch("http://localhost:8081/verify", {
+      const res = await fetch("https://email-verifier-rust.onrender.com/verify", {
         method: "POST",
         body: formData,
       });

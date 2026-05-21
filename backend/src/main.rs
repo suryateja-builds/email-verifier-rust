@@ -224,14 +224,23 @@ async fn upload_csv(mut multipart: Multipart) -> Json<Vec<EmailResult>> {
         }
     }
 
-    let tasks: Vec<_> = emails
-        .into_iter()
+let batch_size = 10;
+let mut all_results = Vec::new();
+
+for chunk in emails.chunks(batch_size) {
+
+    let tasks: Vec<_> = chunk
+        .iter()
+        .cloned()
         .map(verify_email)
         .collect();
 
-    let results = join_all(tasks).await;
+    let batch_results = join_all(tasks).await;
 
-    Json(results)
+    all_results.extend(batch_results);
+}
+
+Json(all_results)
 }
 
 async fn health() -> Json<serde_json::Value> {
